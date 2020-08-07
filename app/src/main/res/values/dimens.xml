@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Text Size  -->
+    <dimen name="text_x_small">12sp</dimen>
+    <dimen name="text_small">13sp</dimen>
+    <dimen name="text_medium">14sp</dimen>
+    <dimen name="text_large">16sp</dimen>
+    <dimen name="text_x_large">18sp</dimen>
+    <dimen name="text_xx_large">20sp</dimen>
+    <dimen name="text_3x_large">24sp</dimen>
+    <dimen name="text_4x_large">30sp</dimen>
+    <dimen name="text_5x_large">36sp</dimen>
+
+    <dimen name="text_header">20sp</dimen>
+
+    <!-- Margin Size -->
+    <dimen name="view_margin">2dp</dimen>
+    <dimen name="margin_x_small">5dp</dimen>
+    <dimen name="margin_small">8dp</dimen>
+    <dimen name="margin_medium">10dp</dimen>
+    <dimen name="margin_large">16dp</dimen>
+    <dimen name="margin_x_large">20dp</dimen>
+    <dimen name="margin_xx_large">24dp</dimen>
+    <dimen name="margin_3x_large">32dp</dimen>
+
+    <!-- Bottom Navigation Size -->
+    <dimen name="bottom_navigation_height">56dp</dimen>
+
+    <!-- Main CardView Size -->
+    <dimen name="main_large_card_view_height">240dp</dimen>
+    <dimen name="main_recycler_view_height">272dp</dimen>
+</resources>

@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">DiscoverMovieAPP</string>
+
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!-- Bottom Navigation Menu -->
+    <string name="bottom_navigation_movie">Film</string>
+    <string name="bottom_navigation_tvseries">Dizi</string>
+    <string name="bottom_navigation_search">Ara</string>
+    <string name="bottom_navigation_discover">Keşfet</string>
+    <string name="bottom_navigation_list">Listem</string>
+
+    <!-- Search Fragment Spinner Strings -->
+    <string-array name="searchBySpinner">
+        <item>Film</item>
+        <item>Dizi</item>
+        <item>Ünlü</item>
+    </string-array>
+
+</resources>

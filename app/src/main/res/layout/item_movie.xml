@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="185dp"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="@dimen/margin_medium"
+    android:background="@color/colorPrimary">
+
+    <ImageView
+        android:id="@+id/img_movie"
+        android:layout_width="match_parent"
+        android:layout_height="278dp"
+        android:background="@color/colorAccent"
+        android:scaleType="fitXY"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_movie_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_x_small"
+        android:maxLines="1"
+        android:text="Hacksaw Ridge"
+        android:textColor="@color/white"
+        android:textSize="@dimen/text_x_large"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/img_movie" />
+
+    <TextView
+        android:id="@+id/tv_movie_vote_average"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="@dimen/margin_x_small"
+        android:text="7,60"
+        android:textColor="@color/white"
+        android:textSize="@dimen/text_large"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_movie_name" />
+
+    <RatingBar
+        android:id="@+id/ratingBar"
+        style="?android:attr/ratingBarStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_x_small"
+        android:numStars="5"
+        android:rating="2.5"
+        android:stepSize="0.5"
+        android:theme="@style/RatingBarTheme"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.24"
+        app:layout_constraintStart_toEndOf="@+id/tv_movie_vote_average"
+        app:layout_constraintTop_toBottomOf="@+id/tv_movie_name" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

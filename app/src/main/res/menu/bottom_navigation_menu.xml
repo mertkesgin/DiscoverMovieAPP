@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/movieFragment"
+        android:icon="@drawable/ic_movies"
+        android:title="@string/bottom_navigation_movie" />
+    <item android:id="@+id/tvSeriesFragment"
+        android:icon="@drawable/ic_tvseries"
+        android:title="@string/bottom_navigation_tvseries"/>
+    <item android:id="@+id/searchFragment"
+        android:icon="@drawable/ic_search"
+        android:title="@string/bottom_navigation_search" />
+    <item android:id="@+id/discoverFragment"
+        android:icon="@drawable/ic_discover"
+        android:title="@string/bottom_navigation_discover" />
+    <item android:id="@+id/listFragment"
+        android:icon="@drawable/ic_list"
+        android:title="@string/bottom_navigation_list" />
+</menu>
