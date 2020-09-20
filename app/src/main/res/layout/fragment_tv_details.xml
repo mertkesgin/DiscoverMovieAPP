@@ -10,16 +10,59 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar_tv_details"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
-            android:minHeight="?attr/actionBarSize"
             android:theme="?attr/actionBarTheme"
+            app:contentInsetStart="0dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/imgTvDetailsBack"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:src="@drawable/ic_back"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/textView7"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:fontFamily="@font/utopia"
+                    android:text="TV Series Details"
+                    android:textColor="@color/white"
+                    android:textSize="24sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/imgSaveTvSerie"
+                    app:layout_constraintStart_toEndOf="@+id/imgTvDetailsBack"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/imgSaveTvSerie"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:src="@drawable/ic_save"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.appcompat.widget.Toolbar>
 
         <ImageView
             android:id="@+id/img_tv_details_background"
@@ -162,7 +205,7 @@
                 android:id="@+id/textView8"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Durum : "
+                android:text="Status : "
                 android:textColor="@color/text_color"
                 android:textSize="@dimen/text_x_large"
                 android:textStyle="bold"
@@ -200,7 +243,7 @@
             android:layout_marginStart="@dimen/margin_large"
             android:layout_marginTop="@dimen/margin_large"
             android:layout_marginEnd="@dimen/margin_large"
-            android:text="Dizinin Konusu"
+            android:text="Overview"
             android:textColor="@color/white"
             android:textSize="@dimen/text_xx_large"
             app:layout_constraintEnd_toEndOf="parent"
@@ -230,7 +273,7 @@
             android:layout_marginStart="@dimen/margin_large"
             android:layout_marginTop="@dimen/margin_large"
             android:layout_marginEnd="@dimen/margin_large"
-            android:text="Yapım Şirketleri"
+            android:text="Production Companies"
             android:textColor="@color/white"
             android:textSize="@dimen/text_xx_large"
             app:layout_constraintEnd_toEndOf="parent"
@@ -256,7 +299,7 @@
             android:layout_marginStart="@dimen/margin_large"
             android:layout_marginTop="@dimen/margin_large"
             android:layout_marginEnd="@dimen/margin_large"
-            android:text="Sezonlar"
+            android:text="Seasons"
             android:textColor="@color/white"
             android:textSize="@dimen/text_xx_large"
             app:layout_constraintEnd_toEndOf="parent"
@@ -307,7 +350,7 @@
             android:layout_marginStart="@dimen/margin_large"
             android:layout_marginTop="@dimen/margin_large"
             android:layout_marginEnd="@dimen/margin_large"
-            android:text="Benzer Diziler"
+            android:text="Similar TV Series"
             android:textColor="@color/white"
             android:textSize="@dimen/text_xx_large"
             app:layout_constraintEnd_toEndOf="parent"
@@ -325,6 +368,18 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/textView14" />
+
+        <ProgressBar
+            android:id="@+id/progressBarTvDetails"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="379dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/toolbar_tv_details" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.core.widget.NestedScrollView>

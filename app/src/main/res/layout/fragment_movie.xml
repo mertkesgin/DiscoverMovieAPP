@@ -12,6 +12,18 @@
         android:layout_height="match_parent">
 
 
+        <ProgressBar
+            android:id="@+id/progressBarMovie"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="113dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/rvPopularMovies"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/indicator" />
+
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar_movie"
             android:layout_width="match_parent"
@@ -68,7 +80,7 @@
                 android:layout_marginBottom="8dp"
                 android:layout_weight="1"
                 android:paddingEnd="@dimen/margin_small"
-                android:text="Günün Trendleri"
+                android:text="Trends Of Day"
                 android:textColor="@color/text_color"
                 android:textSize="@dimen/text_x_large"
                 android:textStyle="bold"
@@ -84,7 +96,7 @@
                 android:layout_marginEnd="@dimen/margin_xx_large"
                 android:layout_marginBottom="@dimen/margin_small"
                 android:layout_weight="1"
-                android:text="Devamı >"
+                android:text="@string/see_all"
                 android:textAlignment="viewEnd"
                 android:textColor="@color/text_color"
                 android:textSize="@dimen/text_medium"
@@ -107,16 +119,16 @@
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/indicator"
-            app:tabGravity="center"
-            app:tabBackground="@drawable/indicator_selector"
-            app:tabPaddingStart="1dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/sliderPagerMovie"
+            app:tabBackground="@drawable/indicator_selector"
+            app:tabGravity="center"
             app:tabIndicatorHeight="0dp"
-            app:tabPadding="1dp"/>
+            app:tabPadding="1dp"
+            app:tabPaddingStart="1dp" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintLayout5"
@@ -148,7 +160,7 @@
                 android:layout_marginBottom="8dp"
                 android:layout_weight="1"
                 android:paddingEnd="@dimen/margin_small"
-                android:text="Popüler Filmler"
+                android:text="Popular Movies"
                 android:textColor="@color/text_color"
                 android:textSize="@dimen/text_x_large"
                 android:textStyle="bold"
@@ -164,7 +176,7 @@
                 android:layout_marginEnd="@dimen/margin_xx_large"
                 android:layout_marginBottom="@dimen/margin_small"
                 android:layout_weight="1"
-                android:text="Devamı >"
+                android:text="@string/see_all"
                 android:textAlignment="viewEnd"
                 android:textColor="@color/text_color"
                 android:textSize="@dimen/text_medium"
@@ -215,7 +227,7 @@
                 android:layout_marginBottom="8dp"
                 android:layout_weight="1"
                 android:paddingEnd="@dimen/margin_small"
-                android:text="En Fazla Oy Almış Filmler"
+                android:text="Top Rated Movies"
                 android:textColor="@color/text_color"
                 android:textSize="@dimen/text_x_large"
                 android:textStyle="bold"
@@ -231,7 +243,7 @@
                 android:layout_marginEnd="@dimen/margin_xx_large"
                 android:layout_marginBottom="@dimen/margin_small"
                 android:layout_weight="1"
-                android:text="Devamı >"
+                android:text="@string/see_all"
                 android:textAlignment="viewEnd"
                 android:textColor="@color/text_color"
                 android:textSize="@dimen/text_medium"
@@ -282,7 +294,7 @@
                 android:layout_marginBottom="8dp"
                 android:layout_weight="1"
                 android:paddingEnd="@dimen/margin_small"
-                android:text="Popüler Aktörler/Aktristler"
+                android:text="Best Actors/Actresses"
                 android:textColor="@color/text_color"
                 android:textSize="@dimen/text_x_large"
                 android:textStyle="bold"
@@ -298,7 +310,7 @@
                 android:layout_marginEnd="@dimen/margin_xx_large"
                 android:layout_marginBottom="@dimen/margin_small"
                 android:layout_weight="1"
-                android:text="Devamı >"
+                android:text="@string/see_all"
                 android:textAlignment="viewEnd"
                 android:textColor="@color/text_color"
                 android:textSize="@dimen/text_medium"

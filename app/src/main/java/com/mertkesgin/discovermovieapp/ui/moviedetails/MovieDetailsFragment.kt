@@ -3,6 +3,7 @@ package com.mertkesgin.discovermovieapp.ui.moviedetails
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.View
+import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
@@ -12,16 +13,19 @@ import com.mertkesgin.discovermovieapp.adapter.CastAdapter
 import com.mertkesgin.discovermovieapp.adapter.CompanyAdapter
 import com.mertkesgin.discovermovieapp.adapter.GenreAdapter
 import com.mertkesgin.discovermovieapp.adapter.MoviesAdapter
+import com.mertkesgin.discovermovieapp.data.local.AppDatabase
 import com.mertkesgin.discovermovieapp.model.MovieDetailsResponse
-import com.mertkesgin.discovermovieapp.repository.MovieRepository
+import com.mertkesgin.discovermovieapp.model.entry.MovieEntry
+import com.mertkesgin.discovermovieapp.repository.AppRepository
 import com.mertkesgin.discovermovieapp.ui.ViewModelProviderFactory
 import com.mertkesgin.discovermovieapp.utils.Constants.POSTER_BASE_URL
+import com.mertkesgin.discovermovieapp.utils.Constants.hideProgress
+import com.mertkesgin.discovermovieapp.utils.Constants.showProgress
 import com.mertkesgin.discovermovieapp.utils.PicassoImageHelper
 import com.mertkesgin.discovermovieapp.utils.Resource
 import kotlinx.android.synthetic.main.fragment_movie_details.*
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
-
 
 class MovieDetailsFragment : Fragment(R.layout.fragment_movie_details) {
 
@@ -34,27 +38,55 @@ class MovieDetailsFragment : Fragment(R.layout.fragment_movie_details) {
     private lateinit var castAdapter: CastAdapter
     private lateinit var companyAdapter: CompanyAdapter
 
-    private val args:MovieDetailsFragmentArgs by navArgs()
+    val args: MovieDetailsFragmentArgs by navArgs()
+    lateinit var movieEntry:MovieEntry
+
+    private var isExist = false
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val movieId = args.movieId
+        movieEntry = args.movieEntry
         setupViewModel()
-        MainScope().launch { viewModel.gelAllData(movieId) }
+        MainScope().launch { viewModel.gelAllData(movieEntry.movieId) }
         setupRecyclerView()
         setupMovieDetailsObserver()
         setupSimilarMoviesObserver()
         setupCastObserver()
+        setupSaveMovie()
+        checkIsMovieExistInDb()
+    }
+
+    private fun checkIsMovieExistInDb() {
+        viewModel.isMovieExist(movieEntry.movieId).observe(viewLifecycleOwner, Observer {
+            isExist = it
+            when(it){
+                true -> {imgSaveMovie.setImageResource(R.drawable.ic_save_fill)}
+                else -> {imgSaveMovie.setImageResource(R.drawable.ic_save)}
+            }
+        })
+    }
+
+    private fun setupSaveMovie() {
+        imgSaveMovie.setOnClickListener {
+            if (!isExist){
+                viewModel.insertMovie(movieEntry)
+                Toast.makeText(requireContext(), "Movie Saved", Toast.LENGTH_SHORT).show()
+            }else viewModel.deleteMovie(movieEntry)
+        }
     }
 
     private fun setupCastObserver() {
         viewModel.cast.observe(viewLifecycleOwner, Observer { response ->
             when(response){
                 is Resource.Success -> {
-                    response.data?.let {
-                        castAdapter.differ.submitList(it.castEntry)
-                    }
+                    response.data?.let { castAdapter.differ.submitList(it.castEntry) }
+                    hideProgress(progressBarMovieDetails)
                 }
+                is Resource.Error -> {
+                    response.message?.let { Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show() }
+                    hideProgress(progressBarMovieDetails)
+                }
+                is Resource.Loading -> { showProgress(progressBarMovieDetails) }
             }
         })
     }
@@ -94,6 +126,7 @@ class MovieDetailsFragment : Fragment(R.layout.fragment_movie_details) {
         tv_mDeatils_date.text = movie.release_date
         tv_movie_runtime.text = convertRunTime(movie.runtime)
         genreAdapter.differ.submitList(movie.genres)
+        imgMovieDetailsBack.setOnClickListener { activity?.onBackPressed() }
     }
 
     private fun convertRunTime(runtime: Int): String {
@@ -129,7 +162,7 @@ class MovieDetailsFragment : Fragment(R.layout.fragment_movie_details) {
     }
 
     private fun setupViewModel() {
-        val movieRepository = MovieRepository()
+        val movieRepository = AppRepository(AppDatabase(requireContext()))
         val viewModelProviderFactory = ViewModelProviderFactory(movieRepository)
         viewModel = ViewModelProvider(this,viewModelProviderFactory).get(MovieDetailsViewModel::class.java)
     }

@@ -1,5 +1,8 @@
 package com.mertkesgin.discovermovieapp.utils
 
+import android.view.View
+import android.widget.ProgressBar
+
 object Constants {
 
     const val BASE_URL = "https://api.themoviedb.org/3/"
@@ -9,4 +12,12 @@ object Constants {
     const val LANGUAGE_EN = "en-US"
     const val LANGUAGE_TR = "tr"
     const val SEARCH_TIME_DELAY = 1000L
+
+    fun hideProgress(progressBar: ProgressBar){
+        progressBar.visibility = View.GONE
+    }
+
+    fun showProgress(progressBar: ProgressBar){
+        progressBar.visibility = View.VISIBLE
+    }
 }

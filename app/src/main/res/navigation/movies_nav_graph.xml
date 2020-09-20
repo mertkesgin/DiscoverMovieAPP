@@ -27,15 +27,17 @@
             app:destination="@id/TVDetailsFragment" />
     </fragment>
     <fragment
-        android:id="@+id/discoverFragment"
-        android:name="com.mertkesgin.discovermovieapp.ui.discover.DiscoverFragment"
-        android:label="fragment_discover"
-        tools:layout="@layout/fragment_discover" />
-    <fragment
         android:id="@+id/listFragment"
         android:name="com.mertkesgin.discovermovieapp.ui.list.ListFragment"
         android:label="fragment_list"
-        tools:layout="@layout/fragment_list" />
+        tools:layout="@layout/fragment_list" >
+        <action
+            android:id="@+id/action_listFragment_to_movieDetailsFragment"
+            app:destination="@id/movieDetailsFragment" />
+        <action
+            android:id="@+id/action_listFragment_to_TVDetailsFragment"
+            app:destination="@id/TVDetailsFragment" />
+    </fragment>
     <fragment
         android:id="@+id/tvSeriesFragment"
         android:name="com.mertkesgin.discovermovieapp.ui.tvseries.TVSeriesFragment"
@@ -57,19 +59,19 @@
             android:id="@+id/action_movieDetailsFragment_to_searchFragment"
             app:destination="@id/searchFragment" />
         <argument
-            android:name="movieId"
-            app:argType="integer" />
+            android:name="movieEntry"
+            app:argType="com.mertkesgin.discovermovieapp.model.entry.MovieEntry" />
     </fragment>
     <fragment
         android:id="@+id/TVDetailsFragment"
         android:name="com.mertkesgin.discovermovieapp.ui.tvdetails.TVDetailsFragment"
         android:label="fragment_tv_details"
         tools:layout="@layout/fragment_tv_details" >
-        <argument
-            android:name="tv_id"
-            app:argType="integer" />
         <action
             android:id="@+id/action_TVDetailsFragment_to_tvSeriesFragment"
             app:destination="@id/tvSeriesFragment" />
+        <argument
+            android:name="tvSeriesEntry"
+            app:argType="com.mertkesgin.discovermovieapp.model.entry.TVSeriesEntry" />
     </fragment>
 </navigation>

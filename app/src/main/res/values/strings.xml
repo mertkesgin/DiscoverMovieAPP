@@ -9,6 +9,7 @@
     <string name="bottom_navigation_search">Ara</string>
     <string name="bottom_navigation_discover">Keşfet</string>
     <string name="bottom_navigation_list">Listem</string>
+    <string name="see_all">See All</string>
 
     <!-- Search Fragment Spinner Strings -->
     <string-array name="searchBySpinner">

@@ -2,20 +2,19 @@ package com.mertkesgin.discovermovieapp.ui.movie
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mertkesgin.discovermovieapp.repository.MovieRepository
+import com.mertkesgin.discovermovieapp.repository.AppRepository
 import com.mertkesgin.discovermovieapp.model.MovieResponse
 import com.mertkesgin.discovermovieapp.model.PeopleResponse
+import com.mertkesgin.discovermovieapp.ui.BaseViewModel
 import com.mertkesgin.discovermovieapp.utils.Resource
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import retrofit2.Response
 
 class MovieViewModel(
-    private val movieRepository: MovieRepository
-) : ViewModel(){
+    private val appRepository: AppRepository
+) : BaseViewModel(){
 
     private val _trendsOfDayMovie: MutableLiveData<Resource<MovieResponse>> = MutableLiveData()
     val trendsOfDayMovie: LiveData<Resource<MovieResponse>>
@@ -37,33 +36,18 @@ class MovieViewModel(
         getAllData()
     }
 
-
     private fun getAllData() = viewModelScope.launch{
         _trendsOfDayMovie.postValue(Resource.Loading())
         coroutineScope {
-            val trends = async { movieRepository.fetchTrendsOfDayMovie() }
-            val populars = async { movieRepository.fetchPopularMovies() }
-            val topRateds = async { movieRepository.fetchTopRatedMovies() }
-            val people = async { movieRepository.fetchPopularPeople() }
+            val trends = async { appRepository.fetchTrendsOfDayMovie() }
+            val populars = async { appRepository.fetchPopularMovies() }
+            val topRateds = async { appRepository.fetchTopRatedMovies() }
+            val people = async { appRepository.fetchPopularPeople() }
 
-            val callTrends = trends.await()
-            val callPopulars = populars.await()
-            val callTopRateds = topRateds.await()
-            val callPeople = people.await()
-
-            _trendsOfDayMovie.postValue(handleReponse(callTrends))
-            _popularMovies.postValue(handleReponse(callPopulars))
-            _topRated.postValue(handleReponse(callTopRateds))
-            _popularPeople.postValue(handleReponse(callPeople))
+            _trendsOfDayMovie.postValue(getResult { trends.await() })
+            _popularMovies.postValue(getResult { populars.await() })
+            _topRated.postValue(getResult { topRateds.await() })
+            _popularPeople.postValue(getResult { people.await() })
         }
-    }
-
-    private fun <T : Any?> handleReponse(response: Response<T>) : Resource<T>{
-        if (response.isSuccessful){
-            response.body()?.let { resultResponse ->
-                return Resource.Success(resultResponse)
-            }
-        }
-        return Resource.Error(response.message())
     }
 }

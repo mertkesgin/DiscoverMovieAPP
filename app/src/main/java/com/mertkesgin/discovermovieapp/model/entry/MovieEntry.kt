@@ -3,12 +3,14 @@ package com.mertkesgin.discovermovieapp.model.entry
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
-
+@Entity(tableName = "movie_table")
 data class MovieEntry(
 
+    @PrimaryKey(autoGenerate = false)
     @SerializedName("id")
-    val id: Int,
+    val movieId: Int,
 
     @SerializedName("original_title")
     val original_title: String,
@@ -24,4 +26,4 @@ data class MovieEntry(
 
     @SerializedName("vote_average")
     val vote_average: Double
-)
+):Serializable

@@ -13,30 +13,22 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.tabs.TabLayoutMediator
 import com.mertkesgin.discovermovieapp.R
 import com.mertkesgin.discovermovieapp.adapter.*
+import com.mertkesgin.discovermovieapp.data.local.AppDatabase
 import com.mertkesgin.discovermovieapp.model.entry.TVSeriesEntry
-import com.mertkesgin.discovermovieapp.repository.MovieRepository
+import com.mertkesgin.discovermovieapp.repository.AppRepository
 import com.mertkesgin.discovermovieapp.ui.ViewModelProviderFactory
+import com.mertkesgin.discovermovieapp.utils.Constants.hideProgress
+import com.mertkesgin.discovermovieapp.utils.Constants.showProgress
 import com.mertkesgin.discovermovieapp.utils.Resource
 import kotlinx.android.synthetic.main.fragment_tvseries.*
 
-/**
- * A simple [Fragment] subclass.
- */
-class TVSeriesFragment : Fragment() {
+class TVSeriesFragment : Fragment(R.layout.fragment_tvseries) {
 
     private lateinit var viewModel: TVSeriesViewModel
 
     private lateinit var popularAdapter: TVAdapter
     private lateinit var topRatedAdapter: TVAdapter
     private var trendsList = mutableListOf<TVSeriesEntry>()
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_tvseries, container, false)
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -82,10 +74,15 @@ class TVSeriesFragment : Fragment() {
                         trendsList.add(it.tvSeriesEntries[2])
                         trendsList.add(it.tvSeriesEntries[3])
                         trendsList.add(it.tvSeriesEntries[4])
-                        Toast.makeText(context,it.total_pages.toString(), Toast.LENGTH_LONG).show()
                         initSlider(trendsList)
                     }
+                    hideProgress(progressBarTV)
                 }
+                is Resource.Error ->{
+                    response.message?.let { Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show() }
+                    hideProgress(progressBarTV)
+                }
+                is Resource.Loading -> { showProgress(progressBarTV) }
             }
         })
     }
@@ -96,7 +93,7 @@ class TVSeriesFragment : Fragment() {
     }
 
     private fun setupViewModel() {
-        val movieRepository = MovieRepository()
+        val movieRepository = AppRepository(AppDatabase(requireContext()))
         val viewModelProviderFactory = ViewModelProviderFactory(movieRepository)
         viewModel = ViewModelProvider(this,viewModelProviderFactory).get(TVSeriesViewModel::class.java)
     }
@@ -112,7 +109,7 @@ class TVSeriesFragment : Fragment() {
 
         popularAdapter.setOnItemClickListener {
             val bundle = Bundle().apply {
-                putInt("tv_id",it.id)
+                putSerializable("tvSeriesEntry",it)
             }
             findNavController().navigate(
                 R.id.action_tvSeriesFragment_to_TVDetailsFragment,
@@ -127,7 +124,7 @@ class TVSeriesFragment : Fragment() {
 
         topRatedAdapter.setOnItemClickListener {
             val bundle = Bundle().apply {
-                putInt("tv_id",it.id)
+                putSerializable("tvSeriesEntry",it)
             }
             findNavController().navigate(
                 R.id.action_tvSeriesFragment_to_TVDetailsFragment,

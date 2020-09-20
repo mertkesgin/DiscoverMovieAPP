@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.mertkesgin.discovermovieapp.R
-import com.mertkesgin.discovermovieapp.model.entry.MovieEntry
 import com.mertkesgin.discovermovieapp.model.entry.TVSeriesEntry
 import com.mertkesgin.discovermovieapp.utils.Constants
 import com.mertkesgin.discovermovieapp.utils.PicassoImageHelper
@@ -22,7 +21,7 @@ class TVAdapter() : RecyclerView.Adapter<TVAdapter.PopularTVViewHolder> (){
     private val differCallback = object : DiffUtil.ItemCallback<TVSeriesEntry>(){
 
         override fun areItemsTheSame(oldItem: TVSeriesEntry, newItem: TVSeriesEntry): Boolean {
-            return oldItem.id == newItem.id
+            return oldItem.tvSeriesId == newItem.tvSeriesId
         }
 
         override fun areContentsTheSame(oldItem: TVSeriesEntry, newItem: TVSeriesEntry): Boolean {

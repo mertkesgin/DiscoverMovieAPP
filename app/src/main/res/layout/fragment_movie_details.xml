@@ -11,16 +11,68 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <ProgressBar
+            android:id="@+id/progressBarMovieDetails"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/toolbar_movie_details" />
+
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar_movie_details"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             android:minHeight="?attr/actionBarSize"
             android:theme="?attr/actionBarTheme"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent" >
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/imgMovieDetailsBack"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_back"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="8dp"
+                    android:fontFamily="@font/utopia"
+                    android:text="Movie Details"
+                    android:textColor="@color/white"
+                    android:textSize="24sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/imgSaveMovie"
+                    app:layout_constraintStart_toEndOf="@+id/imgMovieDetailsBack"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/imgSaveMovie"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:src="@drawable/ic_save"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.appcompat.widget.Toolbar>
 
         <ImageView
             android:id="@+id/img_movie_details_background"
@@ -131,9 +183,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/margin_small"
                 android:layout_marginTop="@dimen/margin_medium"
+                android:text="1994-09-23"
                 android:textColor="@color/white"
-                android:textSize="@dimen/text_large"
-                android:text="1994-09-23" />
+                android:textSize="@dimen/text_large" />
         </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
@@ -154,7 +206,7 @@
             android:layout_marginStart="@dimen/margin_large"
             android:layout_marginTop="@dimen/margin_large"
             android:layout_marginEnd="@dimen/margin_large"
-            android:text="Filmin Konusu"
+            android:text="Overview"
             android:textColor="@color/white"
             android:textSize="@dimen/text_xx_large"
             app:layout_constraintEnd_toEndOf="parent"
@@ -208,7 +260,7 @@
             android:layout_marginStart="@dimen/margin_large"
             android:layout_marginTop="@dimen/margin_3x_large"
             android:layout_marginEnd="@dimen/margin_large"
-            android:text="Yapım Şirketleri"
+            android:text="Production Companies"
             android:textColor="@color/white"
             android:textSize="@dimen/text_xx_large"
             app:layout_constraintEnd_toEndOf="parent"
@@ -233,7 +285,7 @@
             android:layout_marginStart="@dimen/margin_large"
             android:layout_marginTop="@dimen/margin_3x_large"
             android:layout_marginEnd="@dimen/margin_large"
-            android:text="Benzer Filmler"
+            android:text="Similar Movies"
             android:textColor="@color/white"
             android:textSize="@dimen/text_xx_large"
             app:layout_constraintEnd_toEndOf="parent"

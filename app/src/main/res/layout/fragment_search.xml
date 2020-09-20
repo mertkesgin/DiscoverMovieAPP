@@ -8,40 +8,29 @@
     android:background="@color/colorPrimary"
     >
 
-    <com.skydoves.powerspinner.PowerSpinnerView
-        android:id="@+id/powerSpinnerView"
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:layout_marginTop="32dp"
-        android:hint="Seç"
-        android:background="@drawable/bg_spinner"
-        android:padding="@dimen/margin_medium"
-        android:textColor="@color/colorAccent"
-        android:textColorHint="@color/colorAccent"
-        android:textSize="@dimen/text_large"
-        app:layout_constraintEnd_toStartOf="@+id/guideline"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:spinner_item_array="@array/searchBySpinner"/>
 
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline"
+    <ProgressBar
+        android:id="@+id/progressBarSearch"
+        style="?android:attr/progressBarStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.25" />
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/rvSearch" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"
         android:layout_width="0dp"
         android:layout_height="50dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="32dp"
-        android:layout_marginEnd="@dimen/margin_small"
+        android:layout_marginEnd="16dp"
         android:background="@drawable/bg_search_layout"
         android:elevation="10dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
@@ -65,7 +54,7 @@
             android:layout_marginStart="@dimen/margin_x_small"
             android:layout_marginEnd="@dimen/margin_x_small"
             android:background="@null"
-            android:hint="Ara..."
+            android:hint="Search Movie"
             android:imeOptions="actionSearch"
             android:textColor="@color/colorAccent"
             android:textColorHint="@color/gray"

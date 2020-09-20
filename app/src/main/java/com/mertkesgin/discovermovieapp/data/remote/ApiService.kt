@@ -1,7 +1,6 @@
 package com.mertkesgin.discovermovieapp.data.remote
 
 import com.mertkesgin.discovermovieapp.model.*
-import com.mertkesgin.discovermovieapp.model.entry.TVSeriesEntry
 import com.mertkesgin.discovermovieapp.utils.Constants.API_KEY
 import com.mertkesgin.discovermovieapp.utils.Constants.LANGUAGE_EN
 import com.mertkesgin.discovermovieapp.utils.Constants.LANGUAGE_TR
@@ -16,7 +15,8 @@ interface ApiService {
     // MOVEI API RESPONSE
     @GET("trending/movie/day")
     suspend fun getTrendsOfDayMovie(
-        @Query("api_key") api_key:String = API_KEY) : Response<MovieResponse>
+        @Query("api_key") api_key:String = API_KEY
+    ) : Response<MovieResponse>
 
     @GET("movie/popular")
     suspend fun getPopularMovies(

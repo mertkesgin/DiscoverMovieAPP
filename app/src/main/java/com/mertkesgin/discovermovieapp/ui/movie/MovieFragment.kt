@@ -1,29 +1,28 @@
 package com.mertkesgin.discovermovieapp.ui.movie
 
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.tabs.TabLayoutMediator
-
 import com.mertkesgin.discovermovieapp.R
-import com.mertkesgin.discovermovieapp.adapter.PeopleAdapter
 import com.mertkesgin.discovermovieapp.adapter.MoviesAdapter
+import com.mertkesgin.discovermovieapp.adapter.PeopleAdapter
 import com.mertkesgin.discovermovieapp.adapter.SliderMovieAdapter
+import com.mertkesgin.discovermovieapp.data.local.AppDatabase
 import com.mertkesgin.discovermovieapp.model.entry.MovieEntry
-import com.mertkesgin.discovermovieapp.repository.MovieRepository
+import com.mertkesgin.discovermovieapp.repository.AppRepository
 import com.mertkesgin.discovermovieapp.ui.ViewModelProviderFactory
+import com.mertkesgin.discovermovieapp.utils.Constants.hideProgress
+import com.mertkesgin.discovermovieapp.utils.Constants.showProgress
 import com.mertkesgin.discovermovieapp.utils.Resource
 import kotlinx.android.synthetic.main.fragment_movie.*
 
-class MovieFragment : Fragment() {
+class MovieFragment : Fragment(R.layout.fragment_movie) {
 
     private lateinit var viewModel : MovieViewModel
 
@@ -53,13 +52,15 @@ class MovieFragment : Fragment() {
                         trendsList.add(it.movieEntries[2])
                         trendsList.add(it.movieEntries[3])
                         trendsList.add(it.movieEntries[4])
-                        Toast.makeText(context,it.total_pages.toString(),Toast.LENGTH_LONG).show()
                         initSlider(trendsList)
                     }
+                    hideProgress(progressBarMovie)
                 }
                 is Resource.Error -> {
-                    Toast.makeText(context,"Başarısız",Toast.LENGTH_LONG).show()
+                    response.message?.let { Toast.makeText(context,it,Toast.LENGTH_LONG).show() }
+                    hideProgress(progressBarMovie)
                 }
+                is Resource.Loading -> { showProgress(progressBarMovie) }
             }
         })
     }
@@ -106,8 +107,8 @@ class MovieFragment : Fragment() {
     }
 
     private fun setupViewModel() {
-        val movieRepository = MovieRepository()
-        val viewModelProviderFactory = ViewModelProviderFactory(movieRepository)
+        val appRepository = AppRepository(AppDatabase(requireContext()))
+        val viewModelProviderFactory = ViewModelProviderFactory(appRepository)
         viewModel = ViewModelProvider(this,viewModelProviderFactory).get(MovieViewModel::class.java)
     }
 
@@ -133,7 +134,7 @@ class MovieFragment : Fragment() {
 
         popularMoviesAdapter.setOnItemClickListener {
             val bundle = Bundle().apply {
-                putInt("movieId",it.id)
+                putSerializable("movieEntry",it)
             }
             findNavController().navigate(
                 R.id.action_movieFragment_to_movieDetailsFragment,
@@ -143,7 +144,7 @@ class MovieFragment : Fragment() {
 
         topRatedMoviesAdapter.setOnItemClickListener {
             val bundle = Bundle().apply {
-                putInt("movieId",it.id)
+                putSerializable("movieEntry",it)
             }
             findNavController().navigate(
                 R.id.action_movieFragment_to_movieDetailsFragment,
