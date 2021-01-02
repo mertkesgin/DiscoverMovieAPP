@@ -1,18 +1,18 @@
 package com.mertkesgin.discovermovieapp.ui.search
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
-import com.mertkesgin.discovermovieapp.R
 import com.mertkesgin.discovermovieapp.adapter.MoviesAdapter
-import com.mertkesgin.discovermovieapp.data.local.AppDatabase
-import com.mertkesgin.discovermovieapp.repository.AppRepository
-import com.mertkesgin.discovermovieapp.ui.ViewModelProviderFactory
+import com.mertkesgin.discovermovieapp.base.BaseFragment
+import com.mertkesgin.discovermovieapp.data.remote.MovieApi
+import com.mertkesgin.discovermovieapp.databinding.FragmentSearchBinding
+import com.mertkesgin.discovermovieapp.repository.SearchRepository
 import com.mertkesgin.discovermovieapp.utils.Constants.SEARCH_TIME_DELAY
 import com.mertkesgin.discovermovieapp.utils.Constants.hideProgress
 import com.mertkesgin.discovermovieapp.utils.Constants.showProgress
@@ -23,30 +23,26 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-
-class SearchFragment : Fragment(R.layout.fragment_search) {
-
-    private lateinit var viewModel: SearchViewModel
+class SearchFragment : BaseFragment<SearchViewModel,FragmentSearchBinding,SearchRepository>() {
 
     private lateinit var searchMovieAdapter: MoviesAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupViewModel()
         setupRecyclerView()
         setupSearchMovie()
-        setupSearchedMoviesObserver()
+        subscribeObservers()
     }
 
-    private fun setupSearchedMoviesObserver() {
+    private fun subscribeObservers() {
         viewModel.movieSearch.observe(viewLifecycleOwner, Observer { response ->
             when(response){
                 is Resource.Success -> {
-                    response.data?.let { searchMovieAdapter.differ.submitList(it.movieEntries) }
+                    response.value.let { searchMovieAdapter.differ.submitList(it.movieEntries) }
                     hideProgress(progressBarSearch)
                 }
                 is Resource.Error -> {
-                    response.message?.let { Toast.makeText(requireContext(), it , Toast.LENGTH_SHORT).show() }
+                    Toast.makeText(requireContext(), "Error", Toast.LENGTH_SHORT).show()
                     hideProgress(progressBarSearch)
                 }
                 is Resource.Loading -> { showProgress(progressBarSearch) }
@@ -77,9 +73,15 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
         }
     }
 
-    private fun setupViewModel() {
-        val movieRepository = AppRepository(AppDatabase(requireContext()))
-        val viewModelProviderFactory = ViewModelProviderFactory(movieRepository)
-        viewModel = ViewModelProvider(this,viewModelProviderFactory).get(SearchViewModel::class.java)
+    override fun getViewModel(): Class<SearchViewModel> = SearchViewModel::class.java
+
+    override fun getFragmentBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentSearchBinding = FragmentSearchBinding.inflate(inflater,container,false)
+
+    override fun getFragmentRepository(): SearchRepository {
+        val movieApi = retrofitInstance.buildApi(MovieApi::class.java)
+        return SearchRepository(movieApi)
     }
 }

@@ -1,37 +1,32 @@
 package com.mertkesgin.discovermovieapp.ui.list
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
-import android.widget.Toast
-import androidx.fragment.app.Fragment
+import android.view.ViewGroup
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.RecyclerView
 import com.mertkesgin.discovermovieapp.R
 import com.mertkesgin.discovermovieapp.adapter.MoviesAdapter
+import com.mertkesgin.discovermovieapp.base.BaseFragment
 import com.mertkesgin.discovermovieapp.data.local.AppDatabase
-import com.mertkesgin.discovermovieapp.repository.AppRepository
-import com.mertkesgin.discovermovieapp.ui.ViewModelProviderFactory
+import com.mertkesgin.discovermovieapp.databinding.FragmentMovieListBinding
+import com.mertkesgin.discovermovieapp.repository.ListRepository
 import kotlinx.android.synthetic.main.fragment_movie_list.*
 
-class MovieListFragment : Fragment(R.layout.fragment_movie_list) {
+class MovieListFragment : BaseFragment<ListViewModel,FragmentMovieListBinding,ListRepository>() {
 
-    private lateinit var movieListViewModel: ListViewModel
     lateinit var movieAdapter: MoviesAdapter
-    private lateinit var itemTouchHelperCallback: ItemTouchHelper.SimpleCallback
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupViewModel()
         setupRecyclerView()
         setupMovieListObserver()
     }
 
     private fun setupMovieListObserver() {
-        movieListViewModel.movieList.observe(viewLifecycleOwner, Observer {
+        viewModel.movieList.observe(viewLifecycleOwner, Observer {
             it?.let { movieAdapter.differ.submitList(it) }
         })
     }
@@ -48,9 +43,15 @@ class MovieListFragment : Fragment(R.layout.fragment_movie_list) {
         }
     }
 
-    private fun setupViewModel() {
-        val appRepository = AppRepository(AppDatabase(requireContext()))
-        val viewModelProviderFactory = ViewModelProviderFactory(appRepository)
-        movieListViewModel = ViewModelProvider(this,viewModelProviderFactory).get(ListViewModel::class.java)
+    override fun getViewModel(): Class<ListViewModel> = ListViewModel::class.java
+
+    override fun getFragmentBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentMovieListBinding = FragmentMovieListBinding.inflate(inflater,container,false)
+
+    override fun getFragmentRepository(): ListRepository {
+        val database = AppDatabase(requireContext())
+        return ListRepository(database)
     }
 }

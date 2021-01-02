@@ -1,11 +1,11 @@
 package com.mertkesgin.discovermovieapp.ui.tvdetails
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mertkesgin.discovermovieapp.R
@@ -13,11 +13,14 @@ import com.mertkesgin.discovermovieapp.adapter.CastAdapter
 import com.mertkesgin.discovermovieapp.adapter.CompanyAdapter
 import com.mertkesgin.discovermovieapp.adapter.GenreAdapter
 import com.mertkesgin.discovermovieapp.adapter.TVAdapter
+import com.mertkesgin.discovermovieapp.base.BaseFragment
 import com.mertkesgin.discovermovieapp.data.local.AppDatabase
+import com.mertkesgin.discovermovieapp.data.remote.PeopleApi
+import com.mertkesgin.discovermovieapp.data.remote.TvSeriesApi
+import com.mertkesgin.discovermovieapp.databinding.FragmentTvDetailsBinding
 import com.mertkesgin.discovermovieapp.model.TVSeriesDetailsResponse
 import com.mertkesgin.discovermovieapp.model.entry.TVSeriesEntry
-import com.mertkesgin.discovermovieapp.repository.AppRepository
-import com.mertkesgin.discovermovieapp.ui.ViewModelProviderFactory
+import com.mertkesgin.discovermovieapp.repository.TvSeriesDetailsRepository
 import com.mertkesgin.discovermovieapp.utils.Constants.POSTER_BASE_URL
 import com.mertkesgin.discovermovieapp.utils.Constants.hideProgress
 import com.mertkesgin.discovermovieapp.utils.Constants.showProgress
@@ -27,9 +30,7 @@ import kotlinx.android.synthetic.main.fragment_tv_details.*
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 
-class TVDetailsFragment : Fragment(R.layout.fragment_tv_details) {
-
-    private lateinit var viewModel : TVDetailsViewModel
+class TVDetailsFragment : BaseFragment<TVDetailsViewModel,FragmentTvDetailsBinding,TvSeriesDetailsRepository>() {
 
     private val picassoImageHelper = PicassoImageHelper()
 
@@ -46,12 +47,9 @@ class TVDetailsFragment : Fragment(R.layout.fragment_tv_details) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         tvSeriesEntry = args.tvSeriesEntry
-        setupViewModel()
         MainScope().launch { viewModel.getAllData(tvSeriesEntry.tvSeriesId) }
         setupRecyclerView()
-        setupTVDetailsObserver()
-        setupSimilarTVSeriesObserver()
-        setupCastObserver()
+        subscribeObservers()
         setupSaveTvSeries()
         checIsTvSeriesExistInDb()
     }
@@ -69,45 +67,41 @@ class TVDetailsFragment : Fragment(R.layout.fragment_tv_details) {
     private fun setupSaveTvSeries() {
         imgSaveTvSerie.setOnClickListener {
             if (!isExist){
-                viewModel.insertTvSerie(tvSeriesEntry)
+                viewModel.insertTvSeries(tvSeriesEntry)
                 Toast.makeText(requireContext(), "Tv Series Saved", Toast.LENGTH_SHORT).show()
             }else viewModel.deleteTvSeries(tvSeriesEntry)
         }
     }
 
-    private fun setupCastObserver() {
+    private fun subscribeObservers() {
         viewModel.tvCast.observe(viewLifecycleOwner, Observer { response ->
             when(response){
                 is Resource.Success -> {
-                    response.data?.let { castAdapter.differ.submitList(it.castEntry) }
+                    response.value.let { castAdapter.differ.submitList(it.castEntry) }
                     hideProgress(progressBarTvDetails)
                 }
                 is Resource.Error -> {
-                    response.message?.let { Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show() }
+
                     hideProgress(progressBarTvDetails)
                 }
                 is Resource.Loading -> { showProgress(progressBarTvDetails) }
             }
         })
-    }
 
-    private fun setupSimilarTVSeriesObserver() {
         viewModel.similarTVSeries.observe(viewLifecycleOwner, Observer { response ->
             when(response){
                 is Resource.Success ->{
-                    response.data?.let {
+                    response.value.let {
                         similarTVAdapter.differ.submitList(it.tvSeriesEntries)
                     }
                 }
             }
         })
-    }
 
-    private fun setupTVDetailsObserver() {
         viewModel.tvSeriesDetails.observe(viewLifecycleOwner, Observer { response ->
             when(response){
                 is Resource.Success -> {
-                    response.data?.let {
+                    response.value.let {
                         initViews(it)
                         genreAdapter.differ.submitList(it.genres)
                     }
@@ -156,9 +150,17 @@ class TVDetailsFragment : Fragment(R.layout.fragment_tv_details) {
         }
     }
 
-    private fun setupViewModel() {
-        val movieRepository = AppRepository(AppDatabase(requireContext()))
-        val viewModelProviderFactory = ViewModelProviderFactory(movieRepository)
-        viewModel = ViewModelProvider(this,viewModelProviderFactory).get(TVDetailsViewModel::class.java)
+    override fun getViewModel(): Class<TVDetailsViewModel> = TVDetailsViewModel::class.java
+
+    override fun getFragmentBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentTvDetailsBinding = FragmentTvDetailsBinding.inflate(inflater,container,false)
+
+    override fun getFragmentRepository(): TvSeriesDetailsRepository {
+        val tvSeriesApi = retrofitInstance.buildApi(TvSeriesApi::class.java)
+        val peopleApi = retrofitInstance.buildApi(PeopleApi::class.java)
+        val database = AppDatabase(requireContext())
+        return TvSeriesDetailsRepository(tvSeriesApi, peopleApi, database)
     }
 }

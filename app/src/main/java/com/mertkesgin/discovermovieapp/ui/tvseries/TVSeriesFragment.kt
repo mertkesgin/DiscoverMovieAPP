@@ -1,85 +1,71 @@
 package com.mertkesgin.discovermovieapp.ui.tvseries
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.tabs.TabLayoutMediator
 import com.mertkesgin.discovermovieapp.R
-import com.mertkesgin.discovermovieapp.adapter.*
-import com.mertkesgin.discovermovieapp.data.local.AppDatabase
+import com.mertkesgin.discovermovieapp.adapter.SliderTVAdapter
+import com.mertkesgin.discovermovieapp.adapter.TVAdapter
+import com.mertkesgin.discovermovieapp.base.BaseFragment
+import com.mertkesgin.discovermovieapp.data.remote.TvSeriesApi
+import com.mertkesgin.discovermovieapp.databinding.FragmentTvseriesBinding
 import com.mertkesgin.discovermovieapp.model.entry.TVSeriesEntry
-import com.mertkesgin.discovermovieapp.repository.AppRepository
-import com.mertkesgin.discovermovieapp.ui.ViewModelProviderFactory
+import com.mertkesgin.discovermovieapp.repository.TvSeriesRepository
 import com.mertkesgin.discovermovieapp.utils.Constants.hideProgress
 import com.mertkesgin.discovermovieapp.utils.Constants.showProgress
 import com.mertkesgin.discovermovieapp.utils.Resource
 import kotlinx.android.synthetic.main.fragment_tvseries.*
 
-class TVSeriesFragment : Fragment(R.layout.fragment_tvseries) {
-
-    private lateinit var viewModel: TVSeriesViewModel
+class TVSeriesFragment : BaseFragment<TVSeriesViewModel,FragmentTvseriesBinding,TvSeriesRepository>() {
 
     private lateinit var popularAdapter: TVAdapter
     private lateinit var topRatedAdapter: TVAdapter
-    private var trendsList = mutableListOf<TVSeriesEntry>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupViewModel()
         setupRecyclerViews()
-        setupTrendsOfDay()
-        setupPopularTVSeriesObserver()
-        setupTopRatedObserver()
+        subscribeObservers()
     }
 
-    private fun setupTopRatedObserver() {
+    private fun subscribeObservers() {
         viewModel.topRated.observe(viewLifecycleOwner, Observer { response ->
             when(response){
                 is Resource.Success -> {
-                    response.data?.let {
-                        topRatedAdapter.differ.submitList(it.tvSeriesEntries)
+                    response.value.let {
+                        topRatedAdapter.differ.submitList(response.value.tvSeriesEntries)
                     }
                 }
             }
         })
-    }
 
-    private fun setupPopularTVSeriesObserver() {
         viewModel.popularTVSeries.observe(viewLifecycleOwner, Observer { response ->
             when(response){
                 is Resource.Success -> {
-                    response.data?.let {
-                        popularAdapter.differ.submitList(it.tvSeriesEntries)
+                    response.value.let {
+                        popularAdapter.differ.submitList(response.value.tvSeriesEntries)
                     }
                 }
             }
         })
-    }
 
-    private fun setupTrendsOfDay() {
         viewModel.trendsOfDayTV.observe(viewLifecycleOwner, Observer { response ->
             when(response){
                 is Resource.Success -> {
-                    response.data?.let {
-                        trendsList.clear()
-                        trendsList.add(it.tvSeriesEntries[0])
-                        trendsList.add(it.tvSeriesEntries[1])
-                        trendsList.add(it.tvSeriesEntries[2])
-                        trendsList.add(it.tvSeriesEntries[3])
-                        trendsList.add(it.tvSeriesEntries[4])
-                        initSlider(trendsList)
+                    response.value.let {
+                        val trendList = response.value.tvSeriesEntries.take(5)
+                        initSlider(trendList)
+                        hideProgress(progressBarTV)
                     }
                     hideProgress(progressBarTV)
                 }
                 is Resource.Error ->{
-                    response.message?.let { Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show() }
+                    Toast.makeText(requireContext(), "Error", Toast.LENGTH_SHORT).show()
                     hideProgress(progressBarTV)
                 }
                 is Resource.Loading -> { showProgress(progressBarTV) }
@@ -87,15 +73,9 @@ class TVSeriesFragment : Fragment(R.layout.fragment_tvseries) {
         })
     }
 
-    private fun initSlider(trendsOfDayEntries: MutableList<TVSeriesEntry>) {
+    private fun initSlider(trendsOfDayEntries: List<TVSeriesEntry>) {
         sliderPagerTV.adapter = SliderTVAdapter(trendsOfDayEntries)
         TabLayoutMediator(indicatorTv,sliderPagerTV) { tab,position -> }.attach()
-    }
-
-    private fun setupViewModel() {
-        val movieRepository = AppRepository(AppDatabase(requireContext()))
-        val viewModelProviderFactory = ViewModelProviderFactory(movieRepository)
-        viewModel = ViewModelProvider(this,viewModelProviderFactory).get(TVSeriesViewModel::class.java)
     }
 
     private fun setupRecyclerViews() {
@@ -131,5 +111,17 @@ class TVSeriesFragment : Fragment(R.layout.fragment_tvseries) {
                 bundle
             )
         }
+    }
+
+    override fun getViewModel(): Class<TVSeriesViewModel> = TVSeriesViewModel::class.java
+
+    override fun getFragmentBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentTvseriesBinding = FragmentTvseriesBinding.inflate(inflater,container,false)
+
+    override fun getFragmentRepository(): TvSeriesRepository {
+        val tvSeriesApi = retrofitInstance.buildApi(TvSeriesApi::class.java)
+        return TvSeriesRepository(tvSeriesApi)
     }
 }

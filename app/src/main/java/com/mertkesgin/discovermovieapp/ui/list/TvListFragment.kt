@@ -1,34 +1,32 @@
 package com.mertkesgin.discovermovieapp.ui.list
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
-import androidx.fragment.app.Fragment
+import android.view.ViewGroup
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.mertkesgin.discovermovieapp.R
 import com.mertkesgin.discovermovieapp.adapter.TVAdapter
+import com.mertkesgin.discovermovieapp.base.BaseFragment
 import com.mertkesgin.discovermovieapp.data.local.AppDatabase
-import com.mertkesgin.discovermovieapp.repository.AppRepository
-import com.mertkesgin.discovermovieapp.ui.ViewModelProviderFactory
+import com.mertkesgin.discovermovieapp.databinding.FragmentTvListBinding
+import com.mertkesgin.discovermovieapp.repository.ListRepository
 import kotlinx.android.synthetic.main.fragment_tv_list.*
 
-class TvListFragment : Fragment(R.layout.fragment_tv_list) {
-
-    private lateinit var tvListViewModel:ListViewModel
+class TvListFragment : BaseFragment<ListViewModel,FragmentTvListBinding,ListRepository>() {
 
     private lateinit var tvListAdapter: TVAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupViewModel()
         setupRecyclerView()
         setupTvListObserver()
     }
 
     private fun setupTvListObserver() {
-        tvListViewModel.tvList.observe(viewLifecycleOwner, Observer {
+        viewModel.tvSeriesList.observe(viewLifecycleOwner, Observer {
             it?.let { tvListAdapter.differ.submitList(it) }
         })
     }
@@ -45,9 +43,15 @@ class TvListFragment : Fragment(R.layout.fragment_tv_list) {
         }
     }
 
-    private fun setupViewModel() {
-        val appRepository = AppRepository(AppDatabase(requireContext()))
-        val viewModelProviderFactory = ViewModelProviderFactory(appRepository)
-        tvListViewModel = ViewModelProvider(this,viewModelProviderFactory).get(ListViewModel::class.java)
+    override fun getViewModel(): Class<ListViewModel> = ListViewModel::class.java
+
+    override fun getFragmentBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentTvListBinding = FragmentTvListBinding.inflate(inflater,container,false)
+
+    override fun getFragmentRepository(): ListRepository {
+        val database = AppDatabase(requireContext())
+        return ListRepository(database)
     }
 }

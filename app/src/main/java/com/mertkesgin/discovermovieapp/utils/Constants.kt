@@ -20,4 +20,10 @@ object Constants {
     fun showProgress(progressBar: ProgressBar){
         progressBar.visibility = View.VISIBLE
     }
+
+    fun convertRunTime(runtime: Int): String {
+        val hour = (runtime/60).toString()
+        val min = (runtime%60).toString()
+        return (hour+"h "+min+"min")
+    }
 }

@@ -1,13 +1,13 @@
 package com.mertkesgin.discovermovieapp.ui.list
 
-import com.mertkesgin.discovermovieapp.repository.AppRepository
-import com.mertkesgin.discovermovieapp.ui.BaseViewModel
+import com.mertkesgin.discovermovieapp.base.BaseViewModel
+import com.mertkesgin.discovermovieapp.repository.ListRepository
 
 class ListViewModel (
-    val appRepository: AppRepository
-): BaseViewModel() {
+    private val repository: ListRepository
+) : BaseViewModel(repository){
 
-    val movieList = appRepository.getMovieList()
+    val movieList = repository.getMovieList
 
-    val tvList = appRepository.getTvList()
+    val tvSeriesList = repository.getTvSeriesList
 }

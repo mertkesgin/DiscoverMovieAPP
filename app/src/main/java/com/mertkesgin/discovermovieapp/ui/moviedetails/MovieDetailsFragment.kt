@@ -1,11 +1,11 @@
 package com.mertkesgin.discovermovieapp.ui.moviedetails
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mertkesgin.discovermovieapp.R
@@ -13,12 +13,16 @@ import com.mertkesgin.discovermovieapp.adapter.CastAdapter
 import com.mertkesgin.discovermovieapp.adapter.CompanyAdapter
 import com.mertkesgin.discovermovieapp.adapter.GenreAdapter
 import com.mertkesgin.discovermovieapp.adapter.MoviesAdapter
+import com.mertkesgin.discovermovieapp.base.BaseFragment
 import com.mertkesgin.discovermovieapp.data.local.AppDatabase
+import com.mertkesgin.discovermovieapp.data.remote.MovieApi
+import com.mertkesgin.discovermovieapp.data.remote.PeopleApi
+import com.mertkesgin.discovermovieapp.databinding.FragmentMovieDetailsBinding
 import com.mertkesgin.discovermovieapp.model.MovieDetailsResponse
 import com.mertkesgin.discovermovieapp.model.entry.MovieEntry
-import com.mertkesgin.discovermovieapp.repository.AppRepository
-import com.mertkesgin.discovermovieapp.ui.ViewModelProviderFactory
+import com.mertkesgin.discovermovieapp.repository.MovieDetailsRepository
 import com.mertkesgin.discovermovieapp.utils.Constants.POSTER_BASE_URL
+import com.mertkesgin.discovermovieapp.utils.Constants.convertRunTime
 import com.mertkesgin.discovermovieapp.utils.Constants.hideProgress
 import com.mertkesgin.discovermovieapp.utils.Constants.showProgress
 import com.mertkesgin.discovermovieapp.utils.PicassoImageHelper
@@ -27,9 +31,7 @@ import kotlinx.android.synthetic.main.fragment_movie_details.*
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 
-class MovieDetailsFragment : Fragment(R.layout.fragment_movie_details) {
-
-    private lateinit var viewModel : MovieDetailsViewModel
+class MovieDetailsFragment : BaseFragment<MovieDetailsViewModel,FragmentMovieDetailsBinding,MovieDetailsRepository>(){
 
     private val picassoImageHelper = PicassoImageHelper()
 
@@ -46,22 +48,54 @@ class MovieDetailsFragment : Fragment(R.layout.fragment_movie_details) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         movieEntry = args.movieEntry
-        setupViewModel()
         MainScope().launch { viewModel.gelAllData(movieEntry.movieId) }
         setupRecyclerView()
-        setupMovieDetailsObserver()
-        setupSimilarMoviesObserver()
-        setupCastObserver()
+        subscribeObservers()
         setupSaveMovie()
-        checkIsMovieExistInDb()
     }
 
-    private fun checkIsMovieExistInDb() {
+    private fun subscribeObservers() {
         viewModel.isMovieExist(movieEntry.movieId).observe(viewLifecycleOwner, Observer {
             isExist = it
             when(it){
                 true -> {imgSaveMovie.setImageResource(R.drawable.ic_save_fill)}
                 else -> {imgSaveMovie.setImageResource(R.drawable.ic_save)}
+            }
+        })
+
+        viewModel.cast.observe(viewLifecycleOwner, Observer { response ->
+            when(response){
+                is Resource.Success -> {
+                    hideProgress(progressBarMovieDetails)
+                }
+                is Resource.Error -> {
+                    Toast.makeText(requireContext(), "Error", Toast.LENGTH_SHORT).show()
+                    hideProgress(progressBarMovieDetails)
+                }
+                is Resource.Loading -> { showProgress(progressBarMovieDetails) }
+            }
+        })
+
+        viewModel.similarMovies.observe(viewLifecycleOwner, Observer { response ->
+            when(response){
+                is Resource.Success -> {
+                    response.value.let {
+                        similarMovieAdapter.differ.submitList(it.movieEntries)
+                    }
+                }
+                is Resource.Error -> { Toast.makeText(requireContext(), "Error", Toast.LENGTH_SHORT).show() }
+            }
+        })
+
+        viewModel.movieDetails.observe(viewLifecycleOwner, Observer { response ->
+            when(response){
+                is Resource.Success -> {
+                    response.value.let {
+                        initViews(it)
+                        companyAdapter.differ.submitList(it.production_companies)
+                    }
+                }
+                is Resource.Error -> { Toast.makeText(requireContext(), "Error", Toast.LENGTH_SHORT).show() }
             }
         })
     }
@@ -75,48 +109,6 @@ class MovieDetailsFragment : Fragment(R.layout.fragment_movie_details) {
         }
     }
 
-    private fun setupCastObserver() {
-        viewModel.cast.observe(viewLifecycleOwner, Observer { response ->
-            when(response){
-                is Resource.Success -> {
-                    response.data?.let { castAdapter.differ.submitList(it.castEntry) }
-                    hideProgress(progressBarMovieDetails)
-                }
-                is Resource.Error -> {
-                    response.message?.let { Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show() }
-                    hideProgress(progressBarMovieDetails)
-                }
-                is Resource.Loading -> { showProgress(progressBarMovieDetails) }
-            }
-        })
-    }
-
-    private fun setupSimilarMoviesObserver() {
-        viewModel.similarMovies.observe(viewLifecycleOwner, Observer { response ->
-            when(response){
-                is Resource.Success -> {
-                    response.data?.let {
-                        similarMovieAdapter.differ.submitList(it.movieEntries)
-                    }
-                }
-            }
-        })
-    }
-
-
-    private fun setupMovieDetailsObserver() {
-        viewModel.movieDetails.observe(viewLifecycleOwner, Observer { response ->
-            when(response){
-                is Resource.Success -> {
-                    response.data?.let {
-                        initViews(it)
-                        companyAdapter.differ.submitList(it.production_companies)
-                    }
-                }
-            }
-        })
-    }
-
     private fun initViews(movie: MovieDetailsResponse) {
         tv_mDetails_movie_name.text = movie.original_title
         tv_movie_storyline.text = movie.overview
@@ -127,12 +119,6 @@ class MovieDetailsFragment : Fragment(R.layout.fragment_movie_details) {
         tv_movie_runtime.text = convertRunTime(movie.runtime)
         genreAdapter.differ.submitList(movie.genres)
         imgMovieDetailsBack.setOnClickListener { activity?.onBackPressed() }
-    }
-
-    private fun convertRunTime(runtime: Int): String {
-        val hour = (runtime/60).toString()
-        val min = (runtime%60).toString()
-        return (hour+"h "+min+"min")
     }
 
     private fun setupRecyclerView() {
@@ -161,9 +147,17 @@ class MovieDetailsFragment : Fragment(R.layout.fragment_movie_details) {
         }
     }
 
-    private fun setupViewModel() {
-        val movieRepository = AppRepository(AppDatabase(requireContext()))
-        val viewModelProviderFactory = ViewModelProviderFactory(movieRepository)
-        viewModel = ViewModelProvider(this,viewModelProviderFactory).get(MovieDetailsViewModel::class.java)
+    override fun getViewModel(): Class<MovieDetailsViewModel> = MovieDetailsViewModel::class.java
+
+    override fun getFragmentBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentMovieDetailsBinding = FragmentMovieDetailsBinding.inflate(inflater,container,false)
+
+    override fun getFragmentRepository(): MovieDetailsRepository {
+        val movieApi = retrofitInstance.buildApi(MovieApi::class.java)
+        val peopleApi = retrofitInstance.buildApi(PeopleApi::class.java)
+        val database = AppDatabase(requireContext())
+        return MovieDetailsRepository(movieApi, peopleApi, database)
     }
 }

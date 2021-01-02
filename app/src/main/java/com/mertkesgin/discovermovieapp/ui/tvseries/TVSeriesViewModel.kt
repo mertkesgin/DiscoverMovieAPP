@@ -4,16 +4,16 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.mertkesgin.discovermovieapp.model.TVSeriesResponse
-import com.mertkesgin.discovermovieapp.repository.AppRepository
-import com.mertkesgin.discovermovieapp.ui.BaseViewModel
+import com.mertkesgin.discovermovieapp.base.BaseViewModel
+import com.mertkesgin.discovermovieapp.repository.TvSeriesRepository
 import com.mertkesgin.discovermovieapp.utils.Resource
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 class TVSeriesViewModel(
-    private val appRepository: AppRepository
-): BaseViewModel() {
+    private val repository: TvSeriesRepository
+): BaseViewModel(repository) {
 
     private val _trendsOfDayTV: MutableLiveData<Resource<TVSeriesResponse>> = MutableLiveData()
     val trendsOfDayTV: LiveData<Resource<TVSeriesResponse>>
@@ -32,15 +32,15 @@ class TVSeriesViewModel(
     }
 
     private fun getAllData() = viewModelScope.launch {
-        _trendsOfDayTV.postValue(Resource.Loading())
+        _trendsOfDayTV.value = Resource.Loading
         coroutineScope {
-            val trends = async { appRepository.fetchTrendsOfDayTV() }
-            val populars = async { appRepository.fetchPopularTVSeries() }
-            val topRateds = async { appRepository.fetchTopRatedTVSeries() }
+            val trends = async { repository.getTrendsOfTv() }
+            val populars = async { repository.getPopularTvSeries() }
+            val topRated = async { repository.getTopRatedTVSeries() }
 
-            _trendsOfDayTV.postValue(getResult { trends.await() })
-            _popularTVSeries.postValue(getResult { populars.await() })
-            _topRated.postValue(getResult { topRateds.await() })
+            _trendsOfDayTV.value = trends.await()
+            _popularTVSeries.value = populars.await()
+            _topRated.value = topRated.await()
         }
     }
 }

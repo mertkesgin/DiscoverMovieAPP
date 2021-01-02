@@ -3,18 +3,18 @@ package com.mertkesgin.discovermovieapp.ui.movie
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.mertkesgin.discovermovieapp.repository.AppRepository
 import com.mertkesgin.discovermovieapp.model.MovieResponse
 import com.mertkesgin.discovermovieapp.model.PeopleResponse
-import com.mertkesgin.discovermovieapp.ui.BaseViewModel
+import com.mertkesgin.discovermovieapp.base.BaseViewModel
+import com.mertkesgin.discovermovieapp.repository.MovieRepository
 import com.mertkesgin.discovermovieapp.utils.Resource
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 class MovieViewModel(
-    private val appRepository: AppRepository
-) : BaseViewModel(){
+    private val repository: MovieRepository
+) : BaseViewModel(repository){
 
     private val _trendsOfDayMovie: MutableLiveData<Resource<MovieResponse>> = MutableLiveData()
     val trendsOfDayMovie: LiveData<Resource<MovieResponse>>
@@ -37,17 +37,17 @@ class MovieViewModel(
     }
 
     private fun getAllData() = viewModelScope.launch{
-        _trendsOfDayMovie.postValue(Resource.Loading())
+        _trendsOfDayMovie.value = Resource.Loading
         coroutineScope {
-            val trends = async { appRepository.fetchTrendsOfDayMovie() }
-            val populars = async { appRepository.fetchPopularMovies() }
-            val topRateds = async { appRepository.fetchTopRatedMovies() }
-            val people = async { appRepository.fetchPopularPeople() }
+            val trends = async { repository.getTrendsOfDay() }
+            val populars = async { repository.getPopularMovies() }
+            val topRated = async { repository.getTopRated() }
+            val people = async { repository.getPopularPeople() }
 
-            _trendsOfDayMovie.postValue(getResult { trends.await() })
-            _popularMovies.postValue(getResult { populars.await() })
-            _topRated.postValue(getResult { topRateds.await() })
-            _popularPeople.postValue(getResult { people.await() })
+            _trendsOfDayMovie.value = trends.await()
+            _popularMovies.value = populars.await()
+            _topRated.value = topRated.await()
+            _popularPeople.value = people.await()
         }
     }
 }

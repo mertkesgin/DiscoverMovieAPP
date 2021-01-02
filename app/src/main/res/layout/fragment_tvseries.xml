@@ -124,7 +124,9 @@
             app:layout_constraintTop_toBottomOf="@+id/sliderPagerTV"
             app:tabBackground="@drawable/indicator_selector"
             app:tabGravity="center"
-            app:tabIndicatorHeight="0dp" />
+            app:tabIndicatorHeight="0dp"
+            app:tabPadding="1dp"
+            app:tabPaddingStart="1dp" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintLayout2"

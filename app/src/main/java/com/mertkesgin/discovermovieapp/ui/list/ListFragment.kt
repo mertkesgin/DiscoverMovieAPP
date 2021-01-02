@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.google.android.material.tabs.TabLayoutMediator
-
 import com.mertkesgin.discovermovieapp.R
 import com.mertkesgin.discovermovieapp.adapter.ViewPagerAdapter
 import kotlinx.android.synthetic.main.fragment_list.view.*
