@@ -6,20 +6,24 @@ import android.view.View
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.mertkesgin.discovermovieapp.R
+import com.mertkesgin.discovermovieapp.databinding.ActivityMainBinding
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var binding: ActivityMainBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        bottomNavigationView.setupWithNavController(moviesNavHostFragment.findNavController())
-        bottomNavigationView.setOnNavigationItemReselectedListener { /*DO NOTHING*/ }
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        binding.bottomNavigationView.setupWithNavController(moviesNavHostFragment.findNavController())
+        binding.bottomNavigationView.setOnNavigationItemReselectedListener { /*DO NOTHING*/ }
         moviesNavHostFragment.findNavController().addOnDestinationChangedListener { _, destination, _ ->
             when(destination.id){
                 R.id.movieDetailsFragment,R.id.TVDetailsFragment ->
-                    bottomNavigationView.visibility = View.GONE
-                else -> bottomNavigationView.visibility = View.VISIBLE
+                    binding.bottomNavigationView.visibility = View.GONE
+                else -> binding.bottomNavigationView.visibility = View.VISIBLE
             }
         }
     }

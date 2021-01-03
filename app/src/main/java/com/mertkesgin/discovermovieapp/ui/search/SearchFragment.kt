@@ -17,7 +17,6 @@ import com.mertkesgin.discovermovieapp.utils.Constants.SEARCH_TIME_DELAY
 import com.mertkesgin.discovermovieapp.utils.Constants.hideProgress
 import com.mertkesgin.discovermovieapp.utils.Constants.showProgress
 import com.mertkesgin.discovermovieapp.utils.Resource
-import kotlinx.android.synthetic.main.fragment_search.*
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
@@ -39,20 +38,20 @@ class SearchFragment : BaseFragment<SearchViewModel,FragmentSearchBinding,Search
             when(response){
                 is Resource.Success -> {
                     response.value.let { searchMovieAdapter.differ.submitList(it.movieEntries) }
-                    hideProgress(progressBarSearch)
+                    hideProgress(binding.progressBarSearch)
                 }
                 is Resource.Error -> {
                     Toast.makeText(requireContext(), "Error", Toast.LENGTH_SHORT).show()
-                    hideProgress(progressBarSearch)
+                    hideProgress(binding.progressBarSearch)
                 }
-                is Resource.Loading -> { showProgress(progressBarSearch) }
+                is Resource.Loading -> { showProgress(binding.progressBarSearch) }
             }
         })
     }
 
     private fun setupSearchMovie() {
         var job: Job? = null
-        etSearch.addTextChangedListener{ editable ->
+        binding.etSearch.addTextChangedListener{ editable ->
             job?.cancel()
             job = MainScope().launch {
                 delay(SEARCH_TIME_DELAY)
@@ -67,7 +66,7 @@ class SearchFragment : BaseFragment<SearchViewModel,FragmentSearchBinding,Search
 
     private fun setupRecyclerView() {
         searchMovieAdapter = MoviesAdapter()
-        rvSearch.apply {
+        binding.rvSearch.apply {
             adapter = searchMovieAdapter
             layoutManager = GridLayoutManager(activity,2,GridLayoutManager.VERTICAL,false)
         }

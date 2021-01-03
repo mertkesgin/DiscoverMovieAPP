@@ -22,7 +22,6 @@ import com.mertkesgin.discovermovieapp.repository.MovieRepository
 import com.mertkesgin.discovermovieapp.utils.Constants.hideProgress
 import com.mertkesgin.discovermovieapp.utils.Constants.showProgress
 import com.mertkesgin.discovermovieapp.utils.Resource
-import kotlinx.android.synthetic.main.fragment_movie.*
 
 class MovieFragment : BaseFragment<MovieViewModel,FragmentMovieBinding,MovieRepository>() {
 
@@ -44,12 +43,12 @@ class MovieFragment : BaseFragment<MovieViewModel,FragmentMovieBinding,MovieRepo
                     response.value.let {
                         val trendList = it.movieEntries.take(5)
                         initSlider(trendList)
-                        hideProgress(progressBarMovie)
                     }
+                    hideProgress(binding.progressBarMovie)
                 }
                 is Resource.Error -> {
                     Toast.makeText(requireContext(), "Error", Toast.LENGTH_SHORT).show()
-                    hideProgress(progressBarMovie)
+                    hideProgress(binding.progressBarMovie)
                 }
                 is Resource.Loading ->{ showProgress(binding.progressBarMovie) }
             }
@@ -60,12 +59,13 @@ class MovieFragment : BaseFragment<MovieViewModel,FragmentMovieBinding,MovieRepo
                 is Resource.Success -> {
                     response.value.let {
                         popularMoviesAdapter.differ.submitList(it.movieEntries)
-                        hideProgress(progressBarMovie)
+                        hideProgress(binding.progressBarMovie)
                     }
+                    hideProgress(binding.progressBarMovie)
                 }
                 is Resource.Error -> {
                     Toast.makeText(requireContext(), "Error", Toast.LENGTH_SHORT).show()
-                    hideProgress(progressBarMovie)
+                    hideProgress(binding.progressBarMovie)
                 }
                 is Resource.Loading ->{ showProgress(binding.progressBarMovie) }
             }
@@ -77,10 +77,11 @@ class MovieFragment : BaseFragment<MovieViewModel,FragmentMovieBinding,MovieRepo
                     response.value.let {
                         topRatedMoviesAdapter.differ.submitList(it.movieEntries)
                     }
+                    hideProgress(binding.progressBarMovie)
                 }
                 is Resource.Error -> {
                     Toast.makeText(requireContext(), "Error", Toast.LENGTH_SHORT).show()
-                    hideProgress(progressBarMovie)
+                    hideProgress(binding.progressBarMovie)
                 }
                 is Resource.Loading ->{ showProgress(binding.progressBarMovie) }
             }
@@ -92,10 +93,11 @@ class MovieFragment : BaseFragment<MovieViewModel,FragmentMovieBinding,MovieRepo
                     response.value.let {
                         peopleAdapter.differ.submitList(it.peopleEntries)
                     }
+                    hideProgress(binding.progressBarMovie)
                 }
                 is Resource.Error -> {
                     Toast.makeText(requireContext(), "Error", Toast.LENGTH_SHORT).show()
-                    hideProgress(progressBarMovie)
+                    hideProgress(binding.progressBarMovie)
                 }
                 is Resource.Loading ->{ showProgress(binding.progressBarMovie) }
             }
@@ -107,17 +109,17 @@ class MovieFragment : BaseFragment<MovieViewModel,FragmentMovieBinding,MovieRepo
         topRatedMoviesAdapter = MoviesAdapter()
         peopleAdapter = PeopleAdapter()
 
-        rvPopularMovies.apply {
+        binding.rvPopularMovies.apply {
             adapter = popularMoviesAdapter
             layoutManager = LinearLayoutManager(activity,LinearLayoutManager.HORIZONTAL,false)
         }
 
-        rvTopRatedMovie.apply {
+        binding.rvTopRatedMovie.apply {
             adapter = topRatedMoviesAdapter
             layoutManager = LinearLayoutManager(activity,LinearLayoutManager.HORIZONTAL,false)
         }
 
-        rvPeople.apply {
+        binding.rvPeople.apply {
             adapter = peopleAdapter
             layoutManager = LinearLayoutManager(activity,LinearLayoutManager.HORIZONTAL,false)
         }
@@ -144,8 +146,8 @@ class MovieFragment : BaseFragment<MovieViewModel,FragmentMovieBinding,MovieRepo
     }
 
     private fun initSlider(trendsOfDayEntries: List<MovieEntry>) {
-        sliderPagerMovie.adapter = SliderMovieAdapter(trendsOfDayEntries)
-        TabLayoutMediator(indicator,sliderPagerMovie) { tab,position -> }.attach()
+        binding.sliderPagerMovie.adapter = SliderMovieAdapter(trendsOfDayEntries)
+        TabLayoutMediator(binding.indicator,binding.sliderPagerMovie) { tab,position -> }.attach()
     }
 
     override fun getViewModel() = MovieViewModel::class.java

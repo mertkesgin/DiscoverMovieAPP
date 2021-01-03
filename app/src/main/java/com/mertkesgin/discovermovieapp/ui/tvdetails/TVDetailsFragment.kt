@@ -26,7 +26,6 @@ import com.mertkesgin.discovermovieapp.utils.Constants.hideProgress
 import com.mertkesgin.discovermovieapp.utils.Constants.showProgress
 import com.mertkesgin.discovermovieapp.utils.PicassoImageHelper
 import com.mertkesgin.discovermovieapp.utils.Resource
-import kotlinx.android.synthetic.main.fragment_tv_details.*
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 
@@ -58,14 +57,14 @@ class TVDetailsFragment : BaseFragment<TVDetailsViewModel,FragmentTvDetailsBindi
         viewModel.isTvSeriesExist(tvSeriesEntry.tvSeriesId).observe(viewLifecycleOwner, Observer {
             isExist = it
             when(it){
-                true -> {imgSaveTvSerie.setImageResource(R.drawable.ic_save_fill)}
-                else -> {imgSaveTvSerie.setImageResource(R.drawable.ic_save)}
+                true -> {binding.imgSaveTvSerie.setImageResource(R.drawable.ic_save_fill)}
+                else -> {binding.imgSaveTvSerie.setImageResource(R.drawable.ic_save)}
             }
         })
     }
 
     private fun setupSaveTvSeries() {
-        imgSaveTvSerie.setOnClickListener {
+        binding.imgSaveTvSerie.setOnClickListener {
             if (!isExist){
                 viewModel.insertTvSeries(tvSeriesEntry)
                 Toast.makeText(requireContext(), "Tv Series Saved", Toast.LENGTH_SHORT).show()
@@ -78,13 +77,13 @@ class TVDetailsFragment : BaseFragment<TVDetailsViewModel,FragmentTvDetailsBindi
             when(response){
                 is Resource.Success -> {
                     response.value.let { castAdapter.differ.submitList(it.castEntry) }
-                    hideProgress(progressBarTvDetails)
+                    hideProgress(binding.progressBarTvDetails)
                 }
                 is Resource.Error -> {
 
-                    hideProgress(progressBarTvDetails)
+                    hideProgress(binding.progressBarTvDetails)
                 }
-                is Resource.Loading -> { showProgress(progressBarTvDetails) }
+                is Resource.Loading -> { showProgress(binding.progressBarTvDetails) }
             }
         })
 
@@ -111,40 +110,40 @@ class TVDetailsFragment : BaseFragment<TVDetailsViewModel,FragmentTvDetailsBindi
     }
 
     private fun initViews(tvSeries: TVSeriesDetailsResponse) {
-        tv_mDetails_tv_name.text = tvSeries.original_name
-        tv_mDetails_tv_vote_average.text = (tvSeries.vote_average.toString() + "/10")
-        tv_season.text = ("Sezonlar(${tvSeries.seasons.size})")
-        tv_tv_storyline.text = tvSeries.overview
-        tv_status.text = tvSeries.status
-        tv_tv_firstlast_date.text = ("${tvSeries.first_air_date} / ${tvSeries.last_air_date}")
-        tv_tv_runtime.text = (tvSeries.episode_run_time[0].toString() + " per episode")
-        picassoImageHelper.loadUrl(POSTER_BASE_URL+tvSeries.poster_path,img_tv_details_profile)
-        picassoImageHelper.loadUrl(POSTER_BASE_URL+tvSeries.backdrop_path,img_tv_details_background)
+        binding.tvMDetailsTvName.text = tvSeries.original_name
+        binding.tvMDetailsTvVoteAverage.text = (tvSeries.vote_average.toString() + "/10")
+        binding.tvSeason.text = ("Sezonlar(${tvSeries.seasons.size})")
+        binding.tvTvStoryline.text = tvSeries.overview
+        binding.tvStatus.text = tvSeries.status
+        binding.tvTvFirstlastDate.text = ("${tvSeries.first_air_date} / ${tvSeries.last_air_date}")
+        binding.tvTvRuntime.text = (tvSeries.episode_run_time[0].toString() + " per episode")
+        picassoImageHelper.loadUrl(POSTER_BASE_URL+tvSeries.poster_path,binding.imgTvDetailsProfile)
+        picassoImageHelper.loadUrl(POSTER_BASE_URL+tvSeries.backdrop_path,binding.imgTvDetailsBackground)
         companyAdapter.differ.submitList(tvSeries.production_companies)
-        imgTvDetailsBack.setOnClickListener { activity?.onBackPressed() }
+        binding.imgTvDetailsBack.setOnClickListener { activity?.onBackPressed() }
     }
 
     private fun setupRecyclerView() {
         genreAdapter = GenreAdapter()
-        rv_tv_genre.apply {
+        binding.rvTvGenre.apply {
             adapter = genreAdapter
             layoutManager = LinearLayoutManager(activity,LinearLayoutManager.HORIZONTAL,false)
         }
 
         similarTVAdapter = TVAdapter()
-        rv_tv_similar.apply {
+        binding.rvTvSimilar.apply {
             adapter = similarTVAdapter
             layoutManager = LinearLayoutManager(activity,LinearLayoutManager.HORIZONTAL,false)
         }
 
         castAdapter = CastAdapter()
-        rv_tv_cast.apply {
+        binding.rvTvCast.apply {
             adapter = castAdapter
             layoutManager = LinearLayoutManager(activity,LinearLayoutManager.HORIZONTAL,false)
         }
 
         companyAdapter = CompanyAdapter()
-        rv_tv_company.apply {
+        binding.rvTvCompany.apply {
             adapter = companyAdapter
             layoutManager = LinearLayoutManager(activity,LinearLayoutManager.HORIZONTAL,false)
         }

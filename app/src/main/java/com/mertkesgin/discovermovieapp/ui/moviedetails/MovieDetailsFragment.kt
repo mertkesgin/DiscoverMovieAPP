@@ -27,7 +27,6 @@ import com.mertkesgin.discovermovieapp.utils.Constants.hideProgress
 import com.mertkesgin.discovermovieapp.utils.Constants.showProgress
 import com.mertkesgin.discovermovieapp.utils.PicassoImageHelper
 import com.mertkesgin.discovermovieapp.utils.Resource
-import kotlinx.android.synthetic.main.fragment_movie_details.*
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 
@@ -58,21 +57,21 @@ class MovieDetailsFragment : BaseFragment<MovieDetailsViewModel,FragmentMovieDet
         viewModel.isMovieExist(movieEntry.movieId).observe(viewLifecycleOwner, Observer {
             isExist = it
             when(it){
-                true -> {imgSaveMovie.setImageResource(R.drawable.ic_save_fill)}
-                else -> {imgSaveMovie.setImageResource(R.drawable.ic_save)}
+                true -> {binding.imgSaveMovie.setImageResource(R.drawable.ic_save_fill)}
+                else -> {binding.imgSaveMovie.setImageResource(R.drawable.ic_save)}
             }
         })
 
         viewModel.cast.observe(viewLifecycleOwner, Observer { response ->
             when(response){
                 is Resource.Success -> {
-                    hideProgress(progressBarMovieDetails)
+                    hideProgress(binding.progressBarMovieDetails)
                 }
                 is Resource.Error -> {
                     Toast.makeText(requireContext(), "Error", Toast.LENGTH_SHORT).show()
-                    hideProgress(progressBarMovieDetails)
+                    hideProgress(binding.progressBarMovieDetails)
                 }
-                is Resource.Loading -> { showProgress(progressBarMovieDetails) }
+                is Resource.Loading -> { showProgress(binding.progressBarMovieDetails) }
             }
         })
 
@@ -101,7 +100,7 @@ class MovieDetailsFragment : BaseFragment<MovieDetailsViewModel,FragmentMovieDet
     }
 
     private fun setupSaveMovie() {
-        imgSaveMovie.setOnClickListener {
+        binding.imgSaveMovie.setOnClickListener {
             if (!isExist){
                 viewModel.insertMovie(movieEntry)
                 Toast.makeText(requireContext(), "Movie Saved", Toast.LENGTH_SHORT).show()
@@ -110,38 +109,38 @@ class MovieDetailsFragment : BaseFragment<MovieDetailsViewModel,FragmentMovieDet
     }
 
     private fun initViews(movie: MovieDetailsResponse) {
-        tv_mDetails_movie_name.text = movie.original_title
-        tv_movie_storyline.text = movie.overview
-        picassoImageHelper.loadUrl(POSTER_BASE_URL+movie.poster_path,img_movie_details_profile)
-        picassoImageHelper.loadUrl(POSTER_BASE_URL+movie.backdrop_path,img_movie_details_background)
-        tv_mDetails_vote_average.text = (movie.vote_average.toString()+ "/10")
-        tv_mDeatils_date.text = movie.release_date
-        tv_movie_runtime.text = convertRunTime(movie.runtime)
+        binding.tvMDetailsMovieName.text = movie.original_title
+        binding.tvMovieStoryline.text = movie.overview
+        picassoImageHelper.loadUrl(POSTER_BASE_URL+movie.poster_path,binding.imgMovieDetailsProfile)
+        picassoImageHelper.loadUrl(POSTER_BASE_URL+movie.backdrop_path,binding.imgMovieDetailsBackground)
+        binding.tvMDetailsVoteAverage.text = (movie.vote_average.toString()+ "/10")
+        binding.tvMDeatilsDate.text = movie.release_date
+        binding.tvMovieRuntime.text = convertRunTime(movie.runtime)
         genreAdapter.differ.submitList(movie.genres)
-        imgMovieDetailsBack.setOnClickListener { activity?.onBackPressed() }
+        binding.imgMovieDetailsBack.setOnClickListener { activity?.onBackPressed() }
     }
 
     private fun setupRecyclerView() {
         genreAdapter = GenreAdapter()
-        rv_genre.apply {
+        binding.rvGenre.apply {
             adapter = genreAdapter
             layoutManager = LinearLayoutManager(activity,LinearLayoutManager.HORIZONTAL,false)
         }
 
         similarMovieAdapter = MoviesAdapter()
-        rv_similar_movies.apply {
+        binding.rvSimilarMovies.apply {
             adapter = similarMovieAdapter
             layoutManager = LinearLayoutManager(activity,LinearLayoutManager.HORIZONTAL,false)
         }
 
         castAdapter = CastAdapter()
-        rv_cast.apply {
+        binding.rvCast.apply {
             adapter = castAdapter
             layoutManager = LinearLayoutManager(activity,LinearLayoutManager.HORIZONTAL,false)
         }
 
         companyAdapter = CompanyAdapter()
-        rv_movie_companies.apply {
+        binding.rvMovieCompanies.apply {
             adapter = companyAdapter
             layoutManager = LinearLayoutManager(activity,LinearLayoutManager.VERTICAL,false)
         }

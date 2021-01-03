@@ -20,7 +20,6 @@ import com.mertkesgin.discovermovieapp.repository.TvSeriesRepository
 import com.mertkesgin.discovermovieapp.utils.Constants.hideProgress
 import com.mertkesgin.discovermovieapp.utils.Constants.showProgress
 import com.mertkesgin.discovermovieapp.utils.Resource
-import kotlinx.android.synthetic.main.fragment_tvseries.*
 
 class TVSeriesFragment : BaseFragment<TVSeriesViewModel,FragmentTvseriesBinding,TvSeriesRepository>() {
 
@@ -60,29 +59,28 @@ class TVSeriesFragment : BaseFragment<TVSeriesViewModel,FragmentTvseriesBinding,
                     response.value.let {
                         val trendList = response.value.tvSeriesEntries.take(5)
                         initSlider(trendList)
-                        hideProgress(progressBarTV)
                     }
-                    hideProgress(progressBarTV)
+                    hideProgress(binding.progressBarTV)
                 }
                 is Resource.Error ->{
                     Toast.makeText(requireContext(), "Error", Toast.LENGTH_SHORT).show()
-                    hideProgress(progressBarTV)
+                    hideProgress(binding.progressBarTV)
                 }
-                is Resource.Loading -> { showProgress(progressBarTV) }
+                is Resource.Loading -> { showProgress(binding.progressBarTV) }
             }
         })
     }
 
     private fun initSlider(trendsOfDayEntries: List<TVSeriesEntry>) {
-        sliderPagerTV.adapter = SliderTVAdapter(trendsOfDayEntries)
-        TabLayoutMediator(indicatorTv,sliderPagerTV) { tab,position -> }.attach()
+        binding.sliderPagerTV.adapter = SliderTVAdapter(trendsOfDayEntries)
+        TabLayoutMediator(binding.indicatorTv,binding.sliderPagerTV) { tab,position -> }.attach()
     }
 
     private fun setupRecyclerViews() {
         popularAdapter = TVAdapter()
         topRatedAdapter = TVAdapter()
 
-        rvPopularTvSeries.apply {
+        binding.rvPopularTvSeries.apply {
             adapter = popularAdapter
             layoutManager = LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL,false)
         }
@@ -97,7 +95,7 @@ class TVSeriesFragment : BaseFragment<TVSeriesViewModel,FragmentTvseriesBinding,
             )
         }
 
-        rvTopRatedTvSeries.apply {
+        binding.rvTopRatedTvSeries.apply {
             adapter = topRatedAdapter
             layoutManager = LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL,false)
         }
